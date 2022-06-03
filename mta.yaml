@@ -1,0 +1,36 @@
+_schema-version: '3.2'
+ID: srvmta02
+version: 0.0.1
+modules:
+  - name: srvmta02-approuter
+    type: approuter.nodejs
+    path: srvmta02-approuter
+    requires:
+      - name: uaa_srvmta02
+      - name: srvmta02-srv
+        group: destinations
+        properties:
+         forwardAuthToken: true
+         strictSSL: false
+         name: srvmta02-srv-dest
+         url: ~{url}
+    parameters:
+      disk-quota: 256M
+      memory: 256M
+  - name: srvmta02-srv-m
+    type: nodejs
+    path: ./srv
+    requires:
+      - name: uaa_srvmta02
+    provides:
+      - name: srvmta02-srv
+        properties:
+          url: ${default-url}    
+resources:
+  - name: uaa_srvmta02
+    type: org.cloudfoundry.managed-service
+    parameters:
+      path: ./xs-security.json
+      service: xsuaa
+      service-name: srvmta02-xsuaa-service
+      service-plan: application
